@@ -1,29 +1,29 @@
 /*
- * cardtest4.c
- *
+ * unittest1.c
+ * Minion
  
  */
 
 /*
  * Include the following lines in your makefile:
  *
- * cardtest4: cardtest4.c dominion.o rngs.o
- *      gcc -o cardtest1 -g  cardtest4.c dominion.o rngs.o $(CFLAGS)
+ * unittest1: unittest1.c dominion.o rngs.o
+ *      gcc -o unittest1 -g  unittest1.c dominion.o rngs.o $(CFLAGS)
  */
 
 
 #include "dominion.h"
-#include "dominion_helpers.h"
+#include "dominion_helpers.h" 
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
 #include "rngs.h"
 #include <stdlib.h>
 
-#define TESTCARD "steward"
+#define TESTCARD "minion"
 
 int main() {
-    int newCards = 0;
+	int numActions = 0;
     int discarded = 1;
     int xtraCoins = 0;
     int shuffledCards = 0;
@@ -42,101 +42,75 @@ int main() {
 	initializeGame(numPlayers, k, seed, &G);
 
 	printf("----------------- Testing Card: %s ----------------\n", TESTCARD);
-
-	// ----------- TEST 1: choice1 = 1 = +2 cards --------------
-	printf("TEST 1: choice1 = 1 = +2 cards\n");
+	//Test 1  - choice 1 - player decides to add 2 coins to treasury
+	//--------Assert: coins+2
+	//--------Assert: discardCard
+	//--------Assert: currentPlayer does not discard cards and get new cards
+	printf("TEST 1: choice1 = 1 = +2 treasury\n");
 
 	// copy the game state to a test case
 	memcpy(&testG, &G, sizeof(struct gameState));
 	choice1 = 1;
-	cardEffect(steward, choice1, choice2, choice3, &testG, handpos, &bonus);
+	cardEffect(minion, choice1, choice2, choice3, &testG, handpos, &bonus);
+	numActions = 1;
+	//--------Assert: numActions+1
+	printf("Actions = %d, expected = %d\n", testG.numActions, G.numActions + numActions);
+	//printf("deck count = %d, expected = %d\n", testG.deckCount[thisPlayer], G.deckCount[thisPlayer] - newCards + shuffledCards);
+	//printf("coins = %d, expected = %d\n", testG.coins, G.coins + xtraCoins);
+	//assert(testG.handCount[thisPlayer] == G.handCount[thisPlayer] + newCards - discarded);
+	//assert(testG.deckCount[thisPlayer] == G.deckCount[thisPlayer] - newCards + shuffledCards);
+	//assert(testG.coins == G.coins + xtraCoins);
 
-	newCards = 2;
-	xtraCoins = 0;
-	printf("hand count = %d, expected = %d\n", testG.handCount[thisPlayer], G.handCount[thisPlayer] + newCards - discarded);
-	printf("deck count = %d, expected = %d\n", testG.deckCount[thisPlayer], G.deckCount[thisPlayer] - newCards + shuffledCards);
-	printf("coins = %d, expected = %d\n", testG.coins, G.coins + xtraCoins);
-	assert(testG.handCount[thisPlayer] == G.handCount[thisPlayer] + newCards - discarded);
-	assert(testG.deckCount[thisPlayer] == G.deckCount[thisPlayer] - newCards + shuffledCards);
-	assert(testG.coins == G.coins + xtraCoins);
 
-	// ----------- TEST 2: choice1 = 2 = +2 coins --------------
-	printf("TEST 2: choice1 = 2 = +2 coins\n");
+	//Test 2  - choice 2 - currentPlayer discards hand and draws 4 new cards.
+	//each other player with at least 5 cards in hand, discards their hand
+	//and draws 4 cards.	
+	printf("TEST 2: choice1 = 0, choice2 = 1 and other player has 5 cards, discards and draws 4.\n");
+	
 
-	// copy the game state to a test case
 	memcpy(&testG, &G, sizeof(struct gameState));
-	choice1 = 2;
-	cardEffect(steward, choice1, choice2, choice3, &testG, handpos, &bonus);
+	printf("HandCount = %d\n", testG.handCount[thisPlayer]);
+	choice1 = 0;
+	choice2 = 1;
+	cardEffect(minion, choice1, choice2, choice3, &testG, handpos, &bonus);
 
-	newCards = 0;
-	xtraCoins = 2;
-	printf("hand count = %d, expected = %d\n", testG.handCount[thisPlayer], G.handCount[thisPlayer] + newCards - discarded);
-	printf("deck count = %d, expected = %d\n", testG.deckCount[thisPlayer], G.deckCount[thisPlayer] - newCards + shuffledCards);
-	printf("coins = %d, expected = %d\n", testG.coins, G.coins + xtraCoins);
-	assert(testG.handCount[thisPlayer] == G.handCount[thisPlayer] + newCards - discarded);
-	assert(testG.deckCount[thisPlayer] == G.deckCount[thisPlayer] - newCards + shuffledCards);
-	assert(testG.coins == G.coins + xtraCoins);
+	//test when other player has 5 cards
+	//--------Setup: choice 1 = 0
+	//--------Setup: choice 2 = 1
+	//--------Setup: otherPlayer cards = 5
+	//--------Assert: numActions+1
+	//--------Assert: coins does not change
+	//--------Assert: discardCard
+	//--------Assert: currentPlayer discard hand - discardPile + 4
+	//--------Assert: currentPlayer draws 4 cards - +4 in hand, -4 in deck
+	//--------Assert: other player discards hand - discardPile+5
+	//--------Assert: other player draws 4 cards - +4 in hand, -4 in deck
 
-	// ----------- TEST 3: choice1 = 3 = trash two cards --------------
+	//Test 3  - choice 2 - currentPlayer discards hand and draws 4 new cards.
+	//each other player with at least 5 cards in hand, discards their hand
+	//and draws 4 cards.
+	printf("TEST 3: choice1 = 0, choice2 = 1 and other player has 4 cards, discards and draws 4.\n");
+	
 
-	printf("TEST 3: choice1 = 3 = trash two cards\n");
-	choice1 = 3;
+	memcpy(&testG, &G, sizeof(struct gameState));
+	testG.handCount[1] = 4;
+	printf("HandCount = %d\n", testG.handCount[1]);
+	choice1 = 0;
+	choice2 = 1;
+	cardEffect(minion, choice1, choice2, choice3, &testG, handpos, &bonus);
+	//test when other player < 5 cards
+	//--------Setup: choice 1 = 0
+	//--------Setup: choice 2 = 1
+	//--------Setup: otherPlayer cards = 4
+	//--------Assert: numActions+1
+	//--------Assert: coins does not change
+	//--------Assert: discardCard
+	//--------Assert: currentPlayer discard hand - discardPile + 4
+	//--------Assert: currentPlayer draws 4 cards - +4 in hand, -4 in deck
+	//--------Assert: other player does not discard hand.
+	//--------Assert: other player does not draw 4 cards.
 
-	// cycle through each eligible combination of 2 cards to trash
-	for (i=1; i<G.handCount[thisPlayer]; i++) {
-		for (j=i+1; j<G.handCount[thisPlayer]; j++) {
-
-			G.hand[thisPlayer][0] = steward;
-			G.hand[thisPlayer][1] = copper;
-			G.hand[thisPlayer][2] = duchy;
-			G.hand[thisPlayer][3] = estate;
-			G.hand[thisPlayer][4] = feast;
-
-			// copy the game state to a test case
-			memcpy(&testG, &G, sizeof(struct gameState));
-
-			printf("starting cards: ");
-			for (m=0; m<testG.handCount[thisPlayer]; m++) {
-				printf("(%d)", testG.hand[thisPlayer][m]);
-			}
-			printf("; ");
-
-			choice2 = j;
-			choice3 = i;
-			remove1 = testG.hand[thisPlayer][i];
-			remove2 = testG.hand[thisPlayer][j];
-			cardEffect(steward, choice1, choice2, choice3, &testG, handpos, &bonus);
-
-			printf("removed: (%d)(%d); ", remove1, remove2);
-			printf("ending cards: ");
-
-			// tests that the removed cards are no longer in the player's hand
-			for (m=0; m<testG.handCount[thisPlayer]; m++) {
-				printf("(%d)", testG.hand[thisPlayer][m]);
-				assert(testG.hand[thisPlayer][m] != remove1);
-				assert(testG.hand[thisPlayer][m] != remove2);
-			}
-			printf(", expected: ");
-			for (m=1; m<G.handCount[thisPlayer]; m++) {
-				if (G.hand[thisPlayer][m] != G.hand[thisPlayer][i] && G.hand[thisPlayer][m] != G.hand[thisPlayer][j]) {
-					printf("(%d)", G.hand[thisPlayer][m]);
-				}
-			}
-			printf("\n");
-
-			// tests for the appropriate number of remaining cards
-			newCards = 0;
-			xtraCoins = 0;
-			discarded = 3;
-			if (i==1 && j==2) {
-				printf("hand count = %d, expected = %d\n", testG.handCount[thisPlayer], G.handCount[thisPlayer] + newCards - discarded);
-				printf("deck count = %d, expected = %d\n", testG.deckCount[thisPlayer], G.deckCount[thisPlayer] - newCards + shuffledCards);
-			}
-			assert(testG.handCount[thisPlayer] == G.handCount[thisPlayer] + newCards - discarded);
-			assert(testG.deckCount[thisPlayer] == G.deckCount[thisPlayer] - newCards + shuffledCards);
-		}
-
-	}
+    
 
 	printf("\n >>>>> SUCCESS: Testing complete %s <<<<<\n\n", TESTCARD);
 
