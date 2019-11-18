@@ -77,7 +77,7 @@ int main() {
 		cardEffect(baron, choice1, choice2, choice3, &testG, handpos, &bonus);
 		printf("BARON 1: choice1 = %d, new_hand = %d,%d,%d,%d,%d,%d, num_estates = %d\n", choice1, testG.hand[0][0],testG.hand[0][1],testG.hand[0][2],testG.hand[0][3],testG.hand[0][4],testG.hand[0][5], num_estates);
 
-		if(jk > 100){
+		if(jk > 25){
 			t = 0;
 		}
 		jk++;
