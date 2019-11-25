@@ -1212,8 +1212,8 @@ int tributeCardEffect(struct gameState* state, int currentPlayer , int nextPlaye
 			//No Card to Reveal
 			if (DEBUG) {
 				printf("No cards to reveal\n");
-			}
-		}
+            }
+		}   
 	}
 
 	else {
