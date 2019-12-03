@@ -12,69 +12,123 @@
 #include "rngs.h"
 #include <stdlib.h>
 
-int *randomg(int array[], int in_array, int out_array)
+int testAssert(int result, int expected, int v)
 {
-    int *r = (int *) malloc(sizeof(int) * out_array);
-    int j;
-    int r1;
-
-    for (int i = 0; i < in_array; i++)
-    {
-      r1 = rand()%in_array;
-      r[i] = array[r1];
-      
+    if (v == 0){ //expect results to be equal;
+        if (result == expected){
+            return 1;
+        }
+        else {
+            return -1;
+        }
     }
-	if(out_array ==1){
-		return r[0];
-	}
-    else{
-		return r;
-	}
+
+    else if (v == 1){ //result >= expected
+        if (result >= expected){
+            return 1;
+        }
+        else {
+            return -1;
+        }
+    }
+
+    else if (v == -1){ //result <= expected
+        if (result <= expected){
+            return 1;
+        }
+        else {
+            return -1;
+        }
+    }
 }
 
 
 int main() {
-	srand(time(NULL));
-
-    int i;
-    int handpos = 0, choice1 = 0, choice2 = 0, choice3 = 0, bonus = 0;
+	int i;
     int seed = 1000;
     int numPlayers = 2;
 	struct gameState G, testG;
 	int k[10] = {adventurer, embargo, village, minion, mine, cutpurse,
 			sea_hag, tribute, smithy, council_room};
+    int t;
+	int player = 1;
+    int score;
+    initializeGame(numPlayers, k, seed, &G);
+    
+    //Create a copy for unit test #1.
+    memcpy(&testG, &G, sizeof(struct gameState));
 
-	// initialize a game state and player cards
-	initializeGame(numPlayers, k, seed, &G);
-	// loop through random inputs and test code coverage.
-	//choice1 - [0,1]
-	int c1_options[2] = {0,1};	
-	//choice2 - [0,1]
-	int c2_options[2] = {0,1};	
-	//currentPlayer = 0
-	//nextPlayer = 1
-	//adjust nextPlayer hand between 4 and 5 [4,5]	
-	int handcount[2] = {4,5};
-	int nextPlayer_hand_count;
-	int t = 1;
-	int jk = 0;
-	while(t){
-		choice1 = randomg(c1_options, 2, 1);
-		choice2 = randomg(c2_options, 2, 1);
-		nextPlayer_hand_count = randomg(handcount, 2, 1);
-		
-		memcpy(&testG, &G, sizeof(struct gameState));
-		testG.handCount[1] = nextPlayer_hand_count;
-		cardEffect(minion, choice1, choice2, choice3, &testG, handpos, &bonus);
-		printf("TEST 1: choice1 = %d, choice2 = %d, next_player_cards = %d\n", choice1, choice2, nextPlayer_hand_count);
+    //Test when discard count < deck
+    testG.handCount[player] = 0;
+    testG.discardCount[player] = 5;
+    testG.deckCount[player] = 10;
 
-		if(jk > 100){
-			t = 0;
-		}
-		jk++;
+    testG.discard[player][0] = 0; //curse : -1
+    testG.discard[player][1] = 1; //estate : 1
+    testG.discard[player][2] = 2; //duchy : 3
+    testG.discard[player][3] = 3; //province : 6
+    testG.discard[player][4] = 3; //province : 6
 
-	}
-	printf("\n >>>>> SUCCESS: Testing complete %s <<<<<\n\n", "BUG5");
+    testG.deck[player][0] = 1; //estate : 1
+    testG.deck[player][1] = 1; //estate : 1
+    testG.deck[player][2] = 1; //estate : 1
+    testG.deck[player][3] = 1; //estate : 1
+    testG.deck[player][4] = 1; //estate : 1
+    testG.deck[player][5] = 1; //estate : 1
+    testG.deck[player][6] = 1; //estate : 1
+    testG.deck[player][7] = 1; //estate : 1
+    testG.deck[player][8] = 1; //estate : 1
+    testG.deck[player][9] = 1; //estate : 1
+
+    score = scoreFor(player, &testG);
+    printf("Score for DECK > DISCARD: %d, \n", score);
+    t = testAssert(score, 25, 0);
+
+    //print if assert was successfull.
+    if(t==1){
+        printf("\n >>>>> SUCCESS: Testing %s <<<<<\n\n", "BUG5 - DECK > DISCARD");
+    }
+	else{
+        printf("\n >>>>> FAILURE: Testing %s <<<<<\n\n", "BUG5 - DECK > DISCARD");
+    }
+
+    //Create a copy for unit test #1.
+    memcpy(&testG, &G, sizeof(struct gameState));
+
+    //Test when discard count < deck
+    testG.handCount[player] = 0;
+    testG.discardCount[player] = 10;
+    testG.deckCount[player] = 5;
+
+    testG.deck[player][0] = 0; //curse : -1
+    testG.deck[player][1] = 1; //estate : 1
+    testG.deck[player][2] = 2; //duchy : 3
+    testG.deck[player][3] = 3; //province : 6
+    testG.deck[player][4] = 3; //province : 6
+
+    testG.discard[player][0] = 1; //estate : 1
+    testG.discard[player][1] = 1; //estate : 1
+    testG.discard[player][2] = 1; //estate : 1
+    testG.discard[player][3] = 1; //estate : 1
+    testG.discard[player][4] = 1; //estate : 1
+    testG.discard[player][5] = 1; //estate : 1
+    testG.discard[player][6] = 1; //estate : 1
+    testG.discard[player][7] = 1; //estate : 1
+    testG.discard[player][8] = 1; //estate : 1
+    testG.discard[player][9] = 1; //estate : 1
+
+    score = scoreFor(player, &testG);
+    printf("Score for DECK < DISCARD: %d, \n", score);
+
+    t = testAssert(score, 25, 0);
+
+    //print if assert was successfull.
+    if(t==1){
+        printf("\n >>>>> SUCCESS: Testing %s <<<<<\n\n", "BUG5 - DECK < DISCARD");
+    }
+	else{
+        printf("\n >>>>> FAILURE: Testing %s <<<<<\n\n", "BUG5 - DECK < DISCARD");
+    }
 
 
 	return 0;

@@ -753,8 +753,8 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
         //gain card with cost up to 5
         //Backup hand
         for (i = 0; i <= state->handCount[currentPlayer]; i++) {
-            temphand[i] = state->hand[currentPlayer][i];//Backup card
-            state->hand[currentPlayer][i] = -1;//Set to nothing
+            //temphand[i] = state->hand[currentPlayer][i];//Backup card
+            //state->hand[currentPlayer][i] = -1;//Set to nothing
         }
         //Backup hand
 
@@ -772,7 +772,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
             }
             else if (state->coins < getCost(choice1)) {
                 printf("That card is too expensive!\n");
-
+                x=0;
                 if (DEBUG) {
                     printf("Coins: %d < %d\n", state->coins, getCost(choice1));
                 }
@@ -1055,10 +1055,10 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
                 shuffle(nextPlayer,state);//Shuffle the deck
             }
             tributeRevealedCards[0] = state->deck[nextPlayer][state->deckCount[nextPlayer]-1];
-            state->deck[nextPlayer][state->deckCount[nextPlayer]--] = -1;
+            state->deck[nextPlayer][state->deckCount[nextPlayer]] = -1;
             state->deckCount[nextPlayer]--;
             tributeRevealedCards[1] = state->deck[nextPlayer][state->deckCount[nextPlayer]-1];
-            state->deck[nextPlayer][state->deckCount[nextPlayer]--] = -1;
+            state->deck[nextPlayer][state->deckCount[nextPlayer]] = -1;
             state->deckCount[nextPlayer]--;
         }
 
@@ -1351,6 +1351,7 @@ int updateCoins(int player, struct gameState *state, int bonus)
         if (state->hand[player][i] == copper)
         {
             state->coins += 1;
+            
         }
         else if (state->hand[player][i] == silver)
         {

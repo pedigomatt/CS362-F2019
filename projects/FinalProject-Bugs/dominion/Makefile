@@ -1,5 +1,17 @@
 CFLAGS= -Wall -fpic -coverage -lm -std=c99
 
+bug4_unittest: bug4_unittest.c dominion.o rngs.o
+	gcc  -o bug4_unittest -g bug4_unittest.c dominion.o rngs.o $(CFLAGS)
+
+bug5_unittest: bug5_unittest.c dominion.o rngs.o
+	gcc  -o bug5_unittest -g bug5_unittest.c dominion.o rngs.o $(CFLAGS)
+
+bug6_unittest: bug6_unittest.c dominion.o rngs.o
+	gcc  -o bug6_unittest -g bug6_unittest.c dominion.o rngs.o $(CFLAGS)
+
+bug7_unittest: bug7_unittest.c dominion.o rngs.o
+	gcc  -o bug7_unittest -g bug7_unittest.c dominion.o rngs.o $(CFLAGS)
+
 rngs.o: rngs.h rngs.c
 	gcc -c rngs.c -g  $(CFLAGS)
 
