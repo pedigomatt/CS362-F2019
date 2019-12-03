@@ -12,6 +12,14 @@ bug6_unittest: bug6_unittest.c dominion.o rngs.o
 bug7_unittest: bug7_unittest.c dominion.o rngs.o
 	gcc  -o bug7_unittest -g bug7_unittest.c dominion.o rngs.o $(CFLAGS)
 
+bug_results: bug4_unittest bug5_unittest bug6_unittest bug7_unittest
+	./bug4_unittest &> bug_results.out
+	./bug5_unittest &> bug_results.out
+	./bug6_unittest &> bug_results.out
+	./bug7_unittest &> bug_results.out
+	gcov -b -f dominion.c >> bug_results.out
+	cat dominion.c.gov >> bug_results.out	
+
 rngs.o: rngs.h rngs.c
 	gcc -c rngs.c -g  $(CFLAGS)
 
