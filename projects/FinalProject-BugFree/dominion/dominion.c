@@ -264,7 +264,7 @@ int playCard(int handPos, int choice1, int choice2, int choice3, struct gameStat
 
     //reduce number of actions
     state->numActions--;
-
+    
     //update coins (Treasure cards may be added with card draws)
     updateCoins(state->whoseTurn, state, coin_bonus);
 
@@ -799,7 +799,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
             temphand[i] = -1;
         }
         //Reset Hand
-
+        *bonus = state->coins;
         return 0;
 
     case gardens:
@@ -938,7 +938,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
             }
         }
 
-
+        *bonus = state->coins;
         return 0;
 
     case great_hall:
@@ -1000,6 +1000,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
             }
 
         }
+        *bonus = state->coins;
         return 0;
 
     case steward:
@@ -1023,6 +1024,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
 
         //discard card from hand
         discardCard(handPos, currentPlayer, state, 0);
+        *bonus = state->coins;
         return 0;
 
     case tribute:
@@ -1067,7 +1069,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
             state->playedCardCount++;
             tributeRevealedCards[1] = -1;
         }
-
+        
         for (i = 0; i < 2; i ++) {
             if (tributeRevealedCards[i] == copper || tributeRevealedCards[i] == silver || tributeRevealedCards[i] == gold) { //Treasure cards
                 state->coins += 2;
@@ -1077,11 +1079,13 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
                 drawCard(currentPlayer, state);
                 drawCard(currentPlayer, state);
             }
-            else { //Action Card
+            
+            else if (tributeRevealedCards[i] >= adventurer)
+            {
                 state->numActions = state->numActions + 2;
             }
         }
-
+        *bonus = state->coins;
         return 0;
 
     case ambassador:
@@ -1099,7 +1103,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
 
         for (i = 0; i < state->handCount[currentPlayer]; i++)
         {
-            if (i != handPos && i == state->hand[currentPlayer][choice1] && i != choice1)
+            if (i != handPos && state->hand[currentPlayer][i] == state->hand[currentPlayer][choice1] && i != choice1)
             {
                 j++;
             }
@@ -1192,6 +1196,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
 
         //trash card
         discardCard(handPos, currentPlayer, state, 1);
+        *bonus = state->coins;
         return 0;
 
     case outpost:
@@ -1216,6 +1221,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
 
         //discard card
         discardCard(handPos, currentPlayer, state, 0);
+        *bonus = state->coins;
         return 0;
 
     case sea_hag:

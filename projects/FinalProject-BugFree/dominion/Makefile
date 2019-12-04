@@ -9,28 +9,39 @@ unittest2: unittest2.c dominion.o rngs.o
 unittest3: unittest3.c dominion.o rngs.o
 	gcc  -o unittest3 -g unittest3.c dominion.o rngs.o $(CFLAGS)
 
-bug4_unittest: bug4_unittest.c dominion.o rngs.o
+bug4unittest: bug4_unittest.c dominion.o rngs.o
 	gcc  -o bug4_unittest -g bug4_unittest.c dominion.o rngs.o $(CFLAGS)
 
-bug5_unittest: bug5_unittest.c dominion.o rngs.o
+bug5unittest: bug5_unittest.c dominion.o rngs.o
 	gcc  -o bug5_unittest -g bug5_unittest.c dominion.o rngs.o $(CFLAGS)
 
-bug6_unittest: bug6_unittest.c dominion.o rngs.o
+bug6unittest: bug6_unittest.c dominion.o rngs.o
 	gcc  -o bug6_unittest -g bug6_unittest.c dominion.o rngs.o $(CFLAGS)
 
-bug7_unittest: bug7_unittest.c dominion.o rngs.o
+bug7unittest: bug7_unittest.c dominion.o rngs.o
 	gcc  -o bug7_unittest -g bug7_unittest.c dominion.o rngs.o $(CFLAGS)
 
-bug_results: unittest1 unittest2 unittest3 bug4_unittest bug5_unittest bug6_unittest bug7_unittest
-	./unittest1 &> bug_results.out
-	./unittest2 &> bug_results.out
-	./unittest3 &> bug_results.out
-	./bug4_unittest &> bug_results.out
-	./bug5_unittest &> bug_results.out
-	./bug6_unittest &> bug_results.out
-	./bug7_unittest &> bug_results.out
-	gcov -b -f dominion.c >> bug_results.out
-	cat dominion.c.gov >> bug_results.out	
+bug8unittest: bug8_unittest.c dominion.o rngs.o
+	gcc  -o bug8_unittest -g bug8_unittest.c dominion.o rngs.o $(CFLAGS)
+
+bug9unittest: bug9_unittest.c dominion.o rngs.o
+	gcc  -o bug9_unittest -g bug9_unittest.c dominion.o rngs.o $(CFLAGS)
+
+bug10unittest: bug10_unittest.c dominion.o rngs.o
+	gcc  -o bug10_unittest -g bug10_unittest.c dominion.o rngs.o $(CFLAGS)
+	
+unittestresults: unittest1 unittest2 unittest3 bug4unittest bug5unittest bug6unittest bug7unittest bug8unittest bug9unittest bug10unittest
+	./unittest1 > unittestresults.out
+	./unittest2 >> unittestresults.out
+	./unittest3 >> unittestresults.out
+	./bug4_unittest >> unittestresults.out
+	./bug5_unittest >> unittestresults.out
+	./bug6_unittest >> unittestresults.out
+	./bug7_unittest >> unittestresults.out
+	./bug8_unittest >> unittestresults.out
+	./bug9_unittest >> unittestresults.out
+	./bug10_unittest >> unittestresults.out
+	gcov dominion.c -b -f >> unittestresults.out
 
 rngs.o: rngs.h rngs.c
 	gcc -c rngs.c -g  $(CFLAGS)
@@ -61,3 +72,6 @@ all: playdom player
 
 clean:
 	rm -f *.o playdom.exe playdom player player.exe  *.gcov *.gcda *.gcno *.so *.out testDrawCard testDrawCard.exe
+
+cleanall: clean
+	rm -f bug*_unittest
